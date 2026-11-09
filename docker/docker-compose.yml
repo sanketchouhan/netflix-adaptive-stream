@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: adaptive_streaming
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: postgres
+      POSTGRES_SEEDS: postgres
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
+    ports:
+      - "7233:7233"
+    volumes:
+      - ./temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
+
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8080:8080"
+
+  worker:
+    build:
+      context: ..
+      dockerfile: apps/worker/Dockerfile
+    depends_on:
+      - temporal
+      - postgres
+    environment:
+      MEDIA_ROOT: /data/media
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/adaptive_streaming
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE: video-processing
+      FFMPEG_PATH: /usr/bin/ffmpeg
+      FFPROBE_PATH: /usr/bin/ffprobe
+    volumes:
+      - ${MEDIA_ROOT:-D:/LAMBDA_Projects/Netflix/netflix-adaptive-stream-media}:/data/media
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

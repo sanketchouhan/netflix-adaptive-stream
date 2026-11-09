@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+generated/
+packages/db/src/generated/
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+.DS_Store
+coverage/
+.vite/

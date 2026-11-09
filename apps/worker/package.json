@@ -1,0 +1,27 @@
+{
+  "name": "@adaptive-streaming/worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc && npm run build:workflows",
+    "build:workflows": "node ./scripts/build-workflow-bundle.js",
+    "dev": "npm run build && dotenv -e ../../.env -- node dist/worker.js",
+    "start": "dotenv -e ../../.env -- node dist/worker.js"
+  },
+  "dependencies": {
+    "@adaptive-streaming/db": "*",
+    "@adaptive-streaming/shared": "*",
+    "@temporalio/activity": "^1.11.7",
+    "@temporalio/client": "^1.11.7",
+    "@temporalio/worker": "^1.11.7",
+    "@temporalio/workflow": "^1.11.7",
+    "dotenv": "^16.4.7",
+    "fluent-ffmpeg": "^2.1.3"
+  },
+  "devDependencies": {
+    "@types/fluent-ffmpeg": "^2.1.27",
+    "@types/node": "^22.10.3",
+    "dotenv-cli": "^8.0.0",
+    "typescript": "^5.7.2"
+  }
+}

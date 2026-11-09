@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Video {
+  id                  String   @id @default(uuid())
+  videoId             String   @unique
+  originalFileName    String?
+  processingStatus    String   @default("pending")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([processingStatus])
+  @@index([createdAt])
+}

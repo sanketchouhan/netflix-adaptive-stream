@@ -1,0 +1,25 @@
+{
+  "name": "netflix-adaptive-stream",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:api": "npm run dev -w @adaptive-streaming/api",
+    "dev:web": "npm run dev -w @adaptive-streaming/web",
+    "dev:worker": "npm run dev -w @adaptive-streaming/worker",
+    "build": "npm run build --workspaces --if-present",
+    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f docker/docker-compose.yml down",
+    "docker:worker": "docker compose -f docker/docker-compose.yml up worker --build",
+    "db:migrate": "npm run db:migrate -w @adaptive-streaming/db",
+    "db:generate": "npm run db:generate -w @adaptive-streaming/db",
+    "init:media": "bash scripts/init-media.sh"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
